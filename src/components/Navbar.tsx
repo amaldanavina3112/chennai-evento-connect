@@ -2,10 +2,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
+import { useAuth } from '@/context/AuthProvider';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -20,6 +22,11 @@ const Navbar = () => {
     { name: 'Contact', path: '/contact' },
     { name: 'Enquiry', path: '/enquiry' },
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    setIsMenuOpen(false);
+  };
 
   return (
     <nav className="bg-white shadow-md">
@@ -43,14 +50,25 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/login">
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <User size={16} /> Login
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button className="btn-primary">Register</Button>
-            </Link>
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-gray-700">Hello, {user.name || 'User'}</span>
+                <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={handleSignOut}>
+                  <LogOut size={16} /> Logout
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <User size={16} /> Login
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button className="btn-primary">Register</Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -76,14 +94,25 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
-                <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant="outline" className="w-full flex items-center justify-center gap-2">
-                    <User size={16} /> Login
-                  </Button>
-                </Link>
-                <Link to="/register" onClick={() => setIsMenuOpen(false)}>
-                  <Button className="btn-primary w-full">Register</Button>
-                </Link>
+                {user ? (
+                  <>
+                    <span className="px-4 py-2 text-gray-700">Hello, {user.name || 'User'}</span>
+                    <Button variant="outline" className="w-full flex items-center justify-center gap-2" onClick={handleSignOut}>
+                      <LogOut size={16} /> Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+                        <User size={16} /> Login
+                      </Button>
+                    </Link>
+                    <Link to="/register" onClick={() => setIsMenuOpen(false)}>
+                      <Button className="btn-primary w-full">Register</Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
