@@ -21,22 +21,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Check for existing session on load
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        const { data: userData } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-          
-        setUser(userData as User);
-      }
-      
-      setLoading(false);
-      
-      // Setup auth state change listener
-      const { data: { subscription } } = await supabase.auth.onAuthStateChange(async (_event, session) => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
         if (session) {
           const { data: userData } = await supabase
             .from('users')
@@ -45,18 +32,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             .single();
             
           setUser(userData as User);
-        } else {
-          setUser(null);
         }
-      });
+      } catch (error) {
+        console.error('Error checking session:', error);
+        toast({
+          title: "Authentication Error",
+          description: "Could not connect to authentication service. Please check your connection or try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
       
-      return () => {
-        subscription.unsubscribe();
-      };
+      // Setup auth state change listener
+      try {
+        const { data: { subscription } } = await supabase.auth.onAuthStateChange(async (_event, session) => {
+          if (session) {
+            const { data: userData } = await supabase
+              .from('users')
+              .select('*')
+              .eq('id', session.user.id)
+              .single();
+              
+            setUser(userData as User);
+          } else {
+            setUser(null);
+          }
+        });
+        
+        return () => {
+          subscription.unsubscribe();
+        };
+      } catch (error) {
+        console.error('Error setting up auth state listener:', error);
+      }
     };
     
     checkSession();
-  }, []);
+  }, [toast]);
 
   // Sign in with email
   const signIn = async (email: string, password: string) => {
@@ -83,6 +96,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return { success: true };
     } catch (error) {
       console.error('Sign in error:', error);
+      toast({
+        title: "Login Failed",
+        description: "An unexpected error occurred. Please try again later.",
+        variant: "destructive",
+      });
       return { success: false, error: 'An unexpected error occurred' };
     }
   };
@@ -129,17 +147,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return { success: true };
     } catch (error) {
       console.error('Sign up error:', error);
+      toast({
+        title: "Registration Failed",
+        description: "An unexpected error occurred. Please try again later.",
+        variant: "destructive",
+      });
       return { success: false, error: 'An unexpected error occurred' };
     }
   };
 
   // Sign out
   const signOut = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
-    });
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+    } catch (error) {
+      console.error('Sign out error:', error);
+      toast({
+        title: "Error",
+        description: "Could not log out. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

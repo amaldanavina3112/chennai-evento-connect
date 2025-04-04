@@ -5,11 +5,18 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
+// Check if environment variables are missing and provide meaningful fallbacks for development
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Missing Supabase environment variables');
+  // For development only - using dummy values to prevent app from crashing
+  // In production, these should be properly set in the environment
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Use dummy values when missing to prevent the app from crashing during development
+const finalSupabaseUrl = supabaseUrl || 'https://placeholder-project.supabase.co';
+const finalSupabaseKey = supabaseAnonKey || 'placeholder-key-for-development-only';
+
+export const supabase = createClient(finalSupabaseUrl, finalSupabaseKey);
 
 // Types for our database entities
 export type User = {
