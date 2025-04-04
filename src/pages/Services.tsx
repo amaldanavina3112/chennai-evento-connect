@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Calendar, Users, Heart, Award, Music, Utensils, Building, Gift, GraduationCap, MapPin } from 'lucide-react';
+import { Calendar, Users, Heart, Award, Music, Utensils, Building, GraduationCap, MapPin } from 'lucide-react';
 import Layout from '@/components/Layout';
 
 const Services = () => {
@@ -50,7 +50,7 @@ const Services = () => {
     {
       icon: <Utensils className="h-12 w-12 text-evento-purple" />,
       title: 'Social Gatherings',
-      description: 'From birthdays to anniversaries, we help you celebrate life's special moments with personalized event planning.',
+      description: "From birthdays to anniversaries, we help you celebrate life's special moments with personalized event planning.",
       features: [
         'Birthday Parties',
         'Anniversary Celebrations',

@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Calendar, Users, MapPin, Award, Heart, Star } from 'lucide-react';
+import Layout from '@/components/Layout';
 
 const Home = () => {
   // Sample featured events
@@ -80,21 +80,21 @@ const Home = () => {
     },
     {
       name: 'Rajesh Kumar',
-      role: 'Bride's Father',
-      content: 'My daughter's wedding was managed flawlessly by Evento. They handled everything with grace and professionalism during the entire process.',
+      role: "Bride's Father",
+      content: "My daughter's wedding was managed flawlessly by Evento. They handled everything with grace and professionalism during the entire process.",
       rating: 5
     },
     {
       name: 'Aisha Patel',
       role: 'Event Coordinator',
       company: 'Global Connections',
-      content: 'As a fellow event professional, I can say that Evento's work is exceptional. They are my go-to recommendation for Chennai events.',
+      content: "As a fellow event professional, I can say that Evento's work is exceptional. They are my go-to recommendation for Chennai events.",
       rating: 4
     }
   ];
 
   return (
-    <div>
+    <Layout>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-evento-purple/90 to-evento-orange/90 text-white">
         <div className="absolute inset-0 z-0">
@@ -268,7 +268,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-    </div>
+    </Layout>
   );
 };
 
