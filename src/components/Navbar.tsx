@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, User, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '@/context/AuthProvider';
 
 const Navbar = () => {
@@ -69,6 +69,12 @@ const Navbar = () => {
                 </Link>
               </>
             )}
+            
+            <Link to="/admin/login">
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <Shield size={16} /> Admin
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -93,6 +99,15 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
+              
+              <Link 
+                to="/admin/login" 
+                className="text-gray-700 hover:text-evento-purple py-2 px-4 rounded-md hover:bg-gray-100 transition-colors duration-300 flex items-center gap-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Shield size={16} /> Admin
+              </Link>
+              
               <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
                 {user ? (
                   <>
