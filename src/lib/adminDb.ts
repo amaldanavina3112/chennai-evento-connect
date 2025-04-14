@@ -11,7 +11,7 @@ export interface AdminUser {
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'admin';
 
-// Sample data for demonstration purposes
+// Sample data for demonstration purposes when database is empty or connection fails
 const SAMPLE_USERS = [
   { id: 'usr_123456789', email: 'john.doe@example.com', name: 'John Doe', created_at: '2023-04-15T10:30:00Z', avatar_url: 'https://i.pravatar.cc/150?u=john' },
   { id: 'usr_987654321', email: 'jane.smith@example.com', name: 'Jane Smith', created_at: '2023-05-20T14:45:00Z', avatar_url: 'https://i.pravatar.cc/150?u=jane' },
@@ -54,25 +54,74 @@ export const AdminDb = {
 
   // Get all users
   async getAllUsers() {
-    // Return sample data instead of querying Supabase
-    return SAMPLE_USERS;
+    try {
+      const { data, error } = await supabase.from('users').select('*');
+      
+      if (error) {
+        console.error('Error fetching users:', error);
+        return SAMPLE_USERS; // Fallback to sample data
+      }
+      
+      return data.length > 0 ? data : SAMPLE_USERS;
+    } catch (error) {
+      console.error('Error in getAllUsers:', error);
+      return SAMPLE_USERS; // Fallback to sample data
+    }
   },
 
   // Get all events
   async getAllEvents() {
-    // Return sample data instead of querying Supabase
-    return SAMPLE_EVENTS;
+    try {
+      const { data, error } = await supabase.from('events').select('*');
+      
+      if (error) {
+        console.error('Error fetching events:', error);
+        return SAMPLE_EVENTS; // Fallback to sample data
+      }
+      
+      return data.length > 0 ? data : SAMPLE_EVENTS;
+    } catch (error) {
+      console.error('Error in getAllEvents:', error);
+      return SAMPLE_EVENTS; // Fallback to sample data
+    }
   },
 
   // Get all bookings with related event data
   async getAllBookings() {
-    // Return sample data instead of querying Supabase
-    return SAMPLE_BOOKINGS;
+    try {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select(`
+          *,
+          events:event_id (*)
+        `);
+      
+      if (error) {
+        console.error('Error fetching bookings:', error);
+        return SAMPLE_BOOKINGS; // Fallback to sample data
+      }
+      
+      return data.length > 0 ? data : SAMPLE_BOOKINGS;
+    } catch (error) {
+      console.error('Error in getAllBookings:', error);
+      return SAMPLE_BOOKINGS; // Fallback to sample data
+    }
   },
 
   // Get all enquiries
   async getAllEnquiries() {
-    // Return sample data instead of querying Supabase
-    return SAMPLE_ENQUIRIES;
+    try {
+      const { data, error } = await supabase.from('enquiries').select('*');
+      
+      if (error) {
+        console.error('Error fetching enquiries:', error);
+        return SAMPLE_ENQUIRIES; // Fallback to sample data
+      }
+      
+      return data.length > 0 ? data : SAMPLE_ENQUIRIES;
+    } catch (error) {
+      console.error('Error in getAllEnquiries:', error);
+      return SAMPLE_ENQUIRIES; // Fallback to sample data
+    }
   }
 };

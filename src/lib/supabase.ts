@@ -50,6 +50,7 @@ export type Booking = {
   total_price: number;
   payment_status: 'pending' | 'completed' | 'failed';
   created_at: string;
+  events?: Event;
 };
 
 export type Enquiry = {
