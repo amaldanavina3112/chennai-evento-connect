@@ -202,10 +202,7 @@ export const Database = {
 
   async searchEvents(query: string) {
     const { data, error } = await supabase
-      .from('events')
-      .select('*')
-      .or(`title.ilike.%${query}%, description.ilike.%${query}%`)
-      .order('date', { ascending: true });
+      .rpc('search_events', { search_term: query });
     
     if (error) {
       console.error('Error searching events:', error);
@@ -215,7 +212,19 @@ export const Database = {
     return data as Event[];
   },
 
-  // Bookings
+  async getUpcomingEvents() {
+    const { data, error } = await supabase
+      .from('upcoming_events')
+      .select('*');
+    
+    if (error) {
+      console.error('Error fetching upcoming events:', error);
+      return [];
+    }
+    
+    return data as Event[];
+  },
+
   async createBooking(booking: Omit<Booking, 'id' | 'created_at'>) {
     const { data, error } = await supabase
       .from('bookings')
@@ -278,7 +287,6 @@ export const Database = {
     return true;
   },
 
-  // Enquiries
   async submitEnquiry(enquiry: Omit<Enquiry, 'id' | 'created_at'>) {
     const { data, error } = await supabase
       .from('enquiries')
@@ -337,5 +345,37 @@ export const Database = {
     }
     
     return true;
+  },
+
+  // New method to get event revenue
+  async getEventRevenue(eventId: string) {
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('total_price')
+      .eq('event_id', eventId)
+      .eq('payment_status', 'completed');
+    
+    if (error) {
+      console.error('Error fetching event revenue:', error);
+      return 0;
+    }
+    
+    return data.reduce((sum, booking) => sum + booking.total_price, 0);
+  },
+
+  // New method to check event availability
+  async checkEventAvailability(eventId: string, requestedQuantity: number) {
+    const { data, error } = await supabase
+      .from('events')
+      .select('max_attendees, current_attendees')
+      .eq('id', eventId)
+      .single();
+    
+    if (error || !data) {
+      console.error('Error checking event availability:', error);
+      return false;
+    }
+    
+    return (data.max_attendees - data.current_attendees) >= requestedQuantity;
   }
 };
