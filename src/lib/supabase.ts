@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 
 // Create a single supabase client for interacting with your database
@@ -63,7 +62,7 @@ export type Enquiry = {
   created_at: string;
 };
 
-// Database service functions
+// Enhanced Database service with more CRUD operations
 export const Database = {
   // Users
   async getUser(userId: string) {
@@ -80,7 +79,52 @@ export const Database = {
     
     return data as User;
   },
-  
+
+  async createUser(user: Omit<User, 'id' | 'created_at'>) {
+    const { data, error } = await supabase
+      .from('users')
+      .insert([user])
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating user:', error);
+      return null;
+    }
+    
+    return data as User;
+  },
+
+  async updateUser(userId: string, updates: Partial<User>) {
+    const { data, error } = await supabase
+      .from('users')
+      .update(updates)
+      .eq('id', userId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error updating user:', error);
+      return null;
+    }
+    
+    return data as User;
+  },
+
+  async deleteUser(userId: string) {
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('id', userId);
+    
+    if (error) {
+      console.error('Error deleting user:', error);
+      return false;
+    }
+    
+    return true;
+  },
+
   // Events
   async getEvents() {
     const { data, error } = await supabase
@@ -95,7 +139,7 @@ export const Database = {
     
     return data as Event[];
   },
-  
+
   async getEvent(eventId: string) {
     const { data, error } = await supabase
       .from('events')
@@ -110,7 +154,7 @@ export const Database = {
     
     return data as Event;
   },
-  
+
   async createEvent(event: Omit<Event, 'id' | 'created_at'>) {
     const { data, error } = await supabase
       .from('events')
@@ -125,7 +169,52 @@ export const Database = {
     
     return data as Event;
   },
-  
+
+  async updateEvent(eventId: string, updates: Partial<Event>) {
+    const { data, error } = await supabase
+      .from('events')
+      .update(updates)
+      .eq('id', eventId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error updating event:', error);
+      return null;
+    }
+    
+    return data as Event;
+  },
+
+  async deleteEvent(eventId: string) {
+    const { error } = await supabase
+      .from('events')
+      .delete()
+      .eq('id', eventId);
+    
+    if (error) {
+      console.error('Error deleting event:', error);
+      return false;
+    }
+    
+    return true;
+  },
+
+  async searchEvents(query: string) {
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .or(`title.ilike.%${query}%, description.ilike.%${query}%`)
+      .order('date', { ascending: true });
+    
+    if (error) {
+      console.error('Error searching events:', error);
+      return [];
+    }
+    
+    return data as Event[];
+  },
+
   // Bookings
   async createBooking(booking: Omit<Booking, 'id' | 'created_at'>) {
     const { data, error } = await supabase
@@ -141,7 +230,7 @@ export const Database = {
     
     return data as Booking;
   },
-  
+
   async getUserBookings(userId: string) {
     const { data, error } = await supabase
       .from('bookings')
@@ -158,7 +247,37 @@ export const Database = {
     
     return data;
   },
-  
+
+  async updateBooking(bookingId: string, updates: Partial<Booking>) {
+    const { data, error } = await supabase
+      .from('bookings')
+      .update(updates)
+      .eq('id', bookingId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error updating booking:', error);
+      return null;
+    }
+    
+    return data as Booking;
+  },
+
+  async deleteBooking(bookingId: string) {
+    const { error } = await supabase
+      .from('bookings')
+      .delete()
+      .eq('id', bookingId);
+    
+    if (error) {
+      console.error('Error deleting booking:', error);
+      return false;
+    }
+    
+    return true;
+  },
+
   // Enquiries
   async submitEnquiry(enquiry: Omit<Enquiry, 'id' | 'created_at'>) {
     const { data, error } = await supabase
@@ -173,5 +292,50 @@ export const Database = {
     }
     
     return data as Enquiry;
+  },
+
+  async getEnquiry(enquiryId: string) {
+    const { data, error } = await supabase
+      .from('enquiries')
+      .select('*')
+      .eq('id', enquiryId)
+      .single();
+    
+    if (error) {
+      console.error('Error fetching enquiry:', error);
+      return null;
+    }
+    
+    return data as Enquiry;
+  },
+
+  async updateEnquiry(enquiryId: string, updates: Partial<Enquiry>) {
+    const { data, error } = await supabase
+      .from('enquiries')
+      .update(updates)
+      .eq('id', enquiryId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error updating enquiry:', error);
+      return null;
+    }
+    
+    return data as Enquiry;
+  },
+
+  async deleteEnquiry(enquiryId: string) {
+    const { error } = await supabase
+      .from('enquiries')
+      .delete()
+      .eq('id', enquiryId);
+    
+    if (error) {
+      console.error('Error deleting enquiry:', error);
+      return false;
+    }
+    
+    return true;
   }
 };
